@@ -1,0 +1,30 @@
+#!/usr/bin/env zsh
+#
+# === {{CMD}}
+#
+set -u -e -o pipefail
+
+local +x ORIGINAL_ARGS="$@"
+local +x ACTION=$1; shift
+
+case "$ACTION" in
+
+  run)
+    reset
+    cd "$THIS_DIR"
+    mkdir -p tmp
+    local +x output=tmp/specs
+    echo "=== Compiling specs: $output $@"
+    my_crystal build specs/da_string.cr -o $output
+    echo "=== Running specs: $output $@"
+    $output $@
+    sh_color GREEN "=== {{DONE}} ==="
+    ;;
+
+  *)
+    echo "!!! Unknown arguments: $ORIGINAL_ARGS" >&2
+    exit 1
+    ;;
+
+esac
+
