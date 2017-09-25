@@ -9,6 +9,12 @@ local +x ACTION=$1; shift
 
 case "$ACTION" in
 
+  watch)
+    local +x CMD="da_string.cr specs run"
+    ${=CMD} || :
+    process watch "-r specs -r src" "$CMD"
+    ;;
+
   run)
     reset
     cd "$THIS_DIR"

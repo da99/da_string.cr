@@ -2,29 +2,37 @@
 require "spec"
 require "../src/da_string"
 
+UTF8_WHITESPACE = "\u205f \u3000 \u0085 \u00a0 \u2007"
+
 describe ":clean" do
 
-  it "returns nil if nb (non-breaking) spaces (160 codepoint)" do
-    str = [160, 160,64, 116, 119, 101, 108, 108, 121, 109, 101, 160, 102, 105, 108, 109].map { |x|
-      x.chr
-    }.join
+  # See why non-breaking spaces are necessary:
+  # https://practicaltypography.com/nonbreaking-spaces.html
+  it "should not remove non-breaking spaces (160 codepoint)" do
+    str = "  @twellyme film"
+    codepoints = [160, 160,64, 116, 119, 101, 108, 108, 121, 109, 101, 160, 102, 105, 108, 109]
     # "**@twellyme*film"
 
-    DA_STRING.clean(str).should eq(nil)
+    (DA_STRING.clean(codepoints.map { |x| x.chr }.join) || "").codepoints
+      .should eq(codepoints)
+    DA_STRING.clean(codepoints.map { |x| x.chr }.join)
+      .should eq(str)
   end
 
-  utf8_whitespace = "\u205f \u3000 \u0085 \u00a0 \u2007"
-  it "replaces utf-8 whitespace with a space: #{utf8_whitespace}" do
-    str = utf8_whitespace
-    new_str = DA_STRING.clean(str) || "error"
-    new_str.split.uniq.join
-      .should eq("")
+  it "does not replace utf-8 whitespace: #{UTF8_WHITESPACE}" do
+    new_str = (DA_STRING.clean(UTF8_WHITESPACE) || "error")
+
+    new_str.valid_encoding?
+      .should eq(true)
+
+    new_str
+      .should eq(UTF8_WHITESPACE)
   end
 
-  it "replaces the No-Break Space (U+00A0) with an empty space" do
+  it "does not replaces the No-Break Space (U+00A0)" do
     str = "a\u{A0}\u00A0A"
     DA_STRING.clean(str)
-      .should eq("a  A")
+      .should eq(str)
   end
 
   it "replaces \\r with space" do
