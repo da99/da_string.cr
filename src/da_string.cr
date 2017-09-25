@@ -20,16 +20,6 @@ module DA_STRING
 
   ASCII_TABLE[NEW_LINE_CODEPOINT] = "\n"
 
-  def clean(s : String, new_str : IO::Memory)
-    return nil unless s.valid_encoding?
-
-    s.codepoints.each { |x|
-      new_str << clean_codepoint(x)
-    }
-
-    new_str
-  end # === def clean
-
   def clean(s : String)
     new_str = clean(s, IO::Memory.new)
     case new_str
@@ -38,6 +28,16 @@ module DA_STRING
     else
       new_str
     end
+  end # === def clean
+
+  def clean(s : String, new_str : IO::Memory)
+    return nil unless s.valid_encoding?
+
+    s.codepoints.each { |x|
+      new_str << clean_codepoint(x)
+    }
+
+    new_str
   end # === def clean
 
   def clean_codepoint( x : Int32 )
