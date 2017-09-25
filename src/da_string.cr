@@ -24,26 +24,7 @@ module DA_STRING
     return nil unless s.valid_encoding?
 
     s.codepoints.each { |x|
-      new_str << case x
-      when 9 # tab
-        DOUBLE_SPACE
-
-      when 10 # 10 = new line
-        NEW_LINE
-
-      when 0..31 # 0-31  - \x00-\x1F
-        SPACE
-
-      when 127 # 127   - DEL, \x7F
-        SPACE
-
-      when 65533 # 65533 - REPLACEMENT CHAR
-        "?"
-
-      else
-        (ASCII_TABLE[x]? && ASCII_TABLE[x]) || x.chr
-
-      end
+      new_str << clean_codepoint(x)
     }
 
     new_str
@@ -58,5 +39,28 @@ module DA_STRING
       new_str
     end
   end # === def clean
+
+  def clean_codepoint( x : Int32 )
+    case x
+    when 9 # tab
+      DOUBLE_SPACE
+
+    when 10 # 10 = new line
+      NEW_LINE
+
+    when 0..31 # 0-31  - \x00-\x1F
+      SPACE
+
+    when 127 # 127   - DEL, \x7F
+      SPACE
+
+    when 65533 # 65533 - REPLACEMENT CHAR
+      "?"
+
+    else
+      (ASCII_TABLE[x]? && ASCII_TABLE[x]) || x.chr
+
+    end
+  end # === def clean_codepoint
 
 end # === module DA_STRING
